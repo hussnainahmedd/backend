@@ -1,148 +1,92 @@
 <div align="center">
 
-# ⚙️ Stock Management API (Backend)
+# 📦 Stock Management Backend
 
-### _Robust RESTful API for Inventory Management_
-
-[![Node.js](https://img.shields.io/badge/Node.js-18.x-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
-[![Express.js](https://img.shields.io/badge/Express.js-4.x-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Express.js](https://img.shields.io/badge/Express.js-5.x-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
-[![JWT](https://img.shields.io/badge/Auth-JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)](https://jwt.io/)
+[![JWT](https://img.shields.io/badge/Auth-JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)](https://jwt.io/)
 
-<br/>
-
-```
-    ╔══════════════════════════════════════════════════════╗
-    ║                                                      ║
-    ║        [ CLIENT ] ──(HTTP JSON)──▶ [ EXPRESS API ]   ║
-    ║                                         │            ║
-    ║                                     (Mongoose)       ║
-    ║                                         ▼            ║
-    ║                                   [ MONGODB DB ]     ║
-    ║                                                      ║
-    ║        Secure. Fast. Ready for your frontend.        ║
-    ╚══════════════════════════════════════════════════════╝
-```
-
-<br/>
-
-> 🛠️ This repository contains the standalone **Node.js / Express backend** designed to power a Stock Management System. It features secure **JWT authentication**, robust MongoDB data models for items and history, and a fully functional RESTful API architecture.
-
----
-
-[Features](#-features) •
-[API Endpoints](#-api-reference) •
-[Tech Stack](#-tech-stack) •
-[Setup](#-quick-start)
+The REST API behind a stock/inventory management system — JWT-secured item CRUD backed by MongoDB, with an automatic change-history ledger. One `app.js` server, no fluff.
 
 </div>
+
+![Project preview](assets/hero.webp)
 
 ---
 
 ## ✨ Features
 
-- **🔐 JWT Authentication**: Secures all inventory routes. Requires a valid token via the `Authorization: Bearer <token>` header.
-- **📦 Inventory CRUD**: Complete API to Create, Read, Update, and Delete stock items.
-- **📜 History Tracking**: Maintains a ledger of inventory changes via the dedicated `History` model.
-- **🛡️ Secure Middleware**: Implements routing best practices, JSON body parsing, and environment variable configuration via `dotenv`.
-- **🍃 MongoDB Integration**: Utilizes `mongoose` for strict schemas and easy NoSQL interactions.
-
----
+- **🔐 JWT authentication** — `POST /api/login` issues a 24-hour token; every other endpoint requires `Authorization: Bearer <token>`.
+- **📦 Full inventory CRUD** — list (newest first), fetch one, create, update, and delete items with `name`, `category`, `quantity`, and `price`.
+- **📜 Automatic history ledger** — every add, update, and delete is recorded with a timestamp; `GET /api/history` returns the last 100 events.
+- **✅ Real input validation** — required fields, non-negative quantity/price, and MongoDB ObjectId checks before any DB call.
+- **🖥️ Companion frontend serving** — serves a static frontend from `../frontend` (`login.html` at `/`, `index.html` for the rest).
+- **🔌 MongoDB-first startup** — the server only listens once the database connection is open, and shuts down gracefully on `SIGINT`.
 
 ## 📡 API Reference
 
-Below are the primary endpoints provided by `app.js`.
-
-| Method | Endpoint | Auth Required | Description |
-|:---:|:---|:---:|:---|
-| `POST` | `/api/login` | ❌ No | Authenticates user credentials and returns a JWT |
-| `GET` | `/api/items` | ✅ Yes | Retrieves all inventory items sorted by creation date |
-| `POST` | `/api/items` | ✅ Yes | Adds a new item to the inventory database |
-| `PUT` | `/api/items/:id` | ✅ Yes | Updates details (e.g., quantity) of an existing item |
-| `DELETE` | `/api/items/:id` | ✅ Yes | Removes an item from the system |
-
----
+| Method | Endpoint | Auth | Description |
+|:------:|----------|:----:|-------------|
+| `POST` | `/api/login` | ❌ | Verify credentials, get a JWT |
+| `GET` | `/api/items` | ✅ | All items, newest first |
+| `GET` | `/api/items/:id` | ✅ | One item by ID |
+| `POST` | `/api/items` | ✅ | Create an item |
+| `PUT` | `/api/items/:id` | ✅ | Update an item |
+| `DELETE` | `/api/items/:id` | ✅ | Delete an item |
+| `GET` | `/api/history` | ✅ | Last 100 inventory events |
 
 ## 🛠️ Tech Stack
 
-<div align="center">
+| Technology | Role |
+|:-----------|:-----|
+| **Node.js** | JavaScript runtime |
+| **Express.js 5** | Routing and middleware |
+| **MongoDB + Mongoose 8** | NoSQL storage with strict schemas |
+| **jsonwebtoken** | Token generation and verification |
+| **dotenv** | Environment configuration |
 
-| Technology | Purpose |
-|:---|:---|
-| **Node.js** | Core JavaScript runtime engine |
-| **Express.js** | Web framework handling HTTP routing and middleware |
-| **MongoDB Atlas / Local** | NoSQL Database storage |
-| **Mongoose** | Object Data Modeling (ODM) for MongoDB |
-| **jsonwebtoken** | Token generation and verification for secure API access |
-| **dotenv** | Environment variable configuration and secret management |
+Also in `package.json`: `bcryptjs`, `cookie-parser`, `cors`, `express-rate-limit`, `helmet` — dependencies kept around for auth hardening and rate limiting.
 
-</div>
+## 🚀 Getting Started
 
----
+**1. Clone and install**
 
-## 🚀 Quick Start
-
-### Prerequisites
-- **Node.js** (v14 or higher)
-- **MongoDB** (Local instance or Atlas connection string)
-
-### Installation
-
-**1. Clone the repository**
 ```bash
 git clone https://github.com/hussnainahmedd/backend.git
 cd backend
-```
-
-**2. Install dependencies**
-```bash
 npm install
 ```
 
-**3. Configure Environment Variables**
-Create a `.env` file in the root directory:
+**2. Add your `.env`**
+
 ```env
-PORT=3000
+PORT=5000
 MONGODB_URI=mongodb://localhost:27017/stock_management
 SECRET_KEY=your_super_secret_jwt_key
 ```
 
-**4. Start the Development Server**
+**3. Run it**
+
 ```bash
-npm run dev
-# OR
 npm start
 ```
-*The server will start, establish a connection to MongoDB, and listen on the configured port.*
 
----
+> ⚠️ **Heads up:** `app.js` imports `./config/db` and `./models/{Item,history}` — make sure those files are present in your project folder before starting, or the server won't boot.
 
 ## 📂 Project Structure
 
 ```
 backend/
-│
-├── app.js                 # 🚀 Main entry point & route definitions
-├── package.json           # 📦 Project metadata and scripts
-├── package-lock.json      
-│
-├── config/                # ⚙️ Configuration files
-│   └── db.js              # MongoDB connection setup
-│
-├── middleware/            # 🛡️ Custom Express middleware
-│   └── auth.js            # (If separated) JWT verification logic
-│
-└── models/                # 📊 Mongoose database schemas
-    ├── Item.js            # Defines the structure of a stock item
-    └── history.js         # Defines the structure of inventory logs
+├── app.js            # Server, routes, auth middleware, error handling
+├── package.json      # Dependencies and scripts
+└── README.md         # You are here
 ```
 
 ---
 
 <div align="center">
 
-**⭐ Star this repo if you found it useful!**
-
-Built with 💻 Node.js and 🍃 MongoDB.
+Built by [Hussnain Ahmad](https://github.com/hussnainahmedd) — a CS undergrad at Air University, Islamabad, learning backend engineering by building real things.
 
 </div>
